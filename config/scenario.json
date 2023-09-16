@@ -1,0 +1,60 @@
+{
+  "ant": [
+    {
+      "0": {
+        "instructions": [
+          "while True:",
+          "  ant.turn_right()",
+          "  for _ in range(30):",
+          "    ant.move(walls)",
+          "pass"
+        ],
+        "color": "red",
+        "initial_position": {
+          "row": 50,
+          "col": 50
+        }
+      }
+    },
+    {
+      "1": {
+        "instructions": [
+          "while True:",
+          "  ant.move(walls)",
+          "  ant.turn_right()",
+          "pass"
+        ],
+        "color": "blue",
+        "initial_position": {
+          "row": 34,
+          "col": 34
+        }
+      }
+    },
+    {
+      "2": {
+        "instructions": [
+          "ant.turn_right()",
+          "while True:",
+          "  ant.move(walls)",
+          "pass"
+        ],
+        "color": "blue",
+        "initial_position": {
+          "row": 34,
+          "col": 34
+        }
+      }
+    }
+  ],
+  "wall": [
+    {
+      "row": 8,
+      "col": 2
+    },
+    {
+      "row": 2,
+      "col": 3
+    }
+  ]
+}
