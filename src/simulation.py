@@ -6,11 +6,11 @@ import pygame.font
 import threading
 
 from resources.code.translator import translate_instructions
-from src.entity.ant import draw_grid, draw_ant, draw_ant_direction
+from src.entity.ant import draw_grid, draw_ant, draw_ant_direction, Ant
 from resources.code.strategy import strategy_if, strategy_while, strategy_for
 from src.entity.wall import draw_wall
-from src.gui import create_button, iteration_text, speed_text, code_by_ant_text, create_buttons
-from resources.json import read_initial_config, read_walls_config, read_ants_config
+from src.gui import create_buttons
+from resources.json import read_walls_config, read_ants_config
 
 simulation_running = False
 paused = False
@@ -18,11 +18,24 @@ delay = 1600
 global_i = 0
 text_code = []
 text_index = 0
+red_text = "\033[91m"
+reset_color = "\033[0m"
+iteration_i = 0
 
 
-def define_initial_code(instructions: [str]):
+def define_initial_code(ants: [Ant], translate_code):
     global text_code
-    text_code = instructions
+    inst = []
+    for ant in ants:
+        if translate_code:
+            inst.append(ant.instructions)
+            ant.instructions = translate_instructions(ant.instructions)
+            if ant.instructions[0] == 'ERROR':
+                print(f"{red_text}{ant.instructions[1]}{reset_color}")
+                return 'ERROR'
+            continue
+        inst.append(ant.instructions)
+    text_code = inst
 
 
 def increase_velocity():
@@ -42,15 +55,16 @@ def change_code_text(i):
     text_index = i
 
 
-def start_simulation_thread(config_file, scenario_file):
-    global global_i, simulation_running, paused
+def start_simulation_thread(
+        scenario_file,
+        grid_size,
+        is_draw_grid,
+        screen_size,
+        translate_code,
+):
+    global global_i, iteration_i, simulation_running, paused
     simulation_running = True
-
-    data = read_initial_config(config_file)
-    grid_size = data["grid_size"]
-    is_draw_grid = data["is_draw_grid"]
-    screen_size = data["screen_size"]
-    translate_code = data["translate_code"]
+    is_in_code_block = False
 
     pygame.init()
 
@@ -65,32 +79,32 @@ def start_simulation_thread(config_file, scenario_file):
 
     ants = read_ants_config(scenario_file, grid_size)
     walls = read_walls_config(scenario_file)
+    err = define_initial_code(ants, translate_code)
+    if err == 'ERROR':
+        return
 
     screen = pygame.display.set_mode((window_width, window_height))
     pygame.display.set_caption("Py-Ants-IA")
 
-    font = pygame.font.Font(None, 30)
-    small_font = pygame.font.Font(None, 20)
-    inst = []
-    print(len(ants))
-    for ant in ants:
-        if translate_code:
-            print(ant.instructions)
-            ant.instructions = translate_instructions(ant.instructions)
-            if ant.instructions[0] == 'ERROR':
-                red_text = "\033[91m"
-                reset_color = "\033[0m"
-                print(f"{red_text}{ant.instructions[1]}{reset_color}")
-                return
-
-        inst.append(ant.instructions)
-
-    define_initial_code(inst)
 
     while simulation_running:
         for ant in ants:
             if ant.instruction_index < len(ant.instructions):
                 instruction = ant.instructions[ant.instruction_index]
+
+                if instruction.startswith("for "):
+                    ant.instructions, len_sub_instructions = strategy_for(ant.instructions, global_i, ant, walls)
+                    instruction = ant.instructions[global_i]
+
+                    if not is_in_code_block:
+                        iteration_i +=1
+                        iteration_i +=len_sub_instructions
+                    is_in_code_block = True
+                    iteration_i -= len_sub_instructions
+                    print("aaaaaaaa", len_sub_instructions)
+                    if len_sub_instructions == 0:
+                        is_in_code_block = False
+                        iteration_i += len_sub_instructions
 
                 if instruction.startswith("if "):
                     ant.instructions = strategy_if(ant.instructions, global_i, ant, walls)
@@ -98,10 +112,6 @@ def start_simulation_thread(config_file, scenario_file):
 
                 if instruction.startswith("while "):
                     ant.instructions = strategy_while(ant.instructions, global_i, ant, walls)
-                    instruction = ant.instructions[global_i]
-
-                if instruction.startswith("for "):
-                    ant.instructions = strategy_for(ant.instructions, global_i, ant, walls)
                     instruction = ant.instructions[global_i]
 
                 exec(instruction)
@@ -124,16 +134,31 @@ def start_simulation_thread(config_file, scenario_file):
         for ant in ants:
             draw_ant(screen, ant, cell_size)
             draw_ant_direction(screen, ant, cell_size)
+        print(iteration_i)
+        create_buttons(
+            global_i, delay, iteration_i, window_width, window_height, screen, ants,
+            change_code_text, text_code, text_index, increase_velocity, reduce_velocity)
 
-        create_buttons(global_i, delay, font,window_width,window_height,screen,ants,change_code_text,text_code, text_index, small_font,increase_velocity,reduce_velocity)
-
+        # boton de stop con un stop aquí
         pygame.display.flip()
         time.sleep(delay / 5000)
         global_i += 1
+        iteration_i += 1
 
 
 
-
-def start_simulation(scenario_file='config/scenario.json', config_file='config/config.json'):
-    simulation_thread = threading.Thread(target=start_simulation_thread, args=(config_file, scenario_file))
+def start_simulation(
+        scenario_file='config/scenario.json',
+        grid_size=40,
+        is_draw_grid=True,
+        screen_size="full",
+        translate_code=True,
+):
+    simulation_thread = threading.Thread(target=start_simulation_thread, args=(
+        scenario_file,
+        grid_size,
+        is_draw_grid,
+        screen_size,
+        translate_code,
+    ))
     simulation_thread.start()

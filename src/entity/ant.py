@@ -85,13 +85,26 @@ class Ant:
         self.color = get_color(color)
 
     def is_ant_in_front(self, ants):
+        print("AAAAAAAAAAAAAA")
         if self.direction == "up":
+            print("AAAAAAAAAAAAAA")
+
+            print(any(ant.row == self.row - 1 and ant.col == self.col for ant in ants))
             return any(ant.row == self.row - 1 and ant.col == self.col for ant in ants)
         elif self.direction == "down":
+            print("AAAAAAAAAAAAAA")
+
+            print(any(ant.row == self.row + 1 and ant.col == self.col for ant in ants))
             return any(ant.row == self.row + 1 and ant.col == self.col for ant in ants)
         elif self.direction == "left":
+            print("AAAAAAAAAAAAAA")
+
+            print(any(ant.row == self.row and ant.col == self.col - 1 for ant in ants))
             return any(ant.row == self.row and ant.col == self.col - 1 for ant in ants)
         elif self.direction == "right":
+            print("AAAAAAAAAAAAAA")
+
+            print(any(ant.row == self.row and ant.col == self.col + 1 for ant in ants))
             return any(ant.row == self.row and ant.col == self.col + 1 for ant in ants)
 
     def get_ant_in_front_instructions(self, ants):

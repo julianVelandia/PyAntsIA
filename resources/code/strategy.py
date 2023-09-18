@@ -54,19 +54,22 @@ def strategy_for(instructions: [str], global_i, ant, walls):
     while instructions[global_i+1].startswith(" "):
         global_i += 1
         sub_arr.append(instructions[global_i][2:])
+        if global_i+1 >= len(instructions):
+            break
 
 
     if n_int == 1:
         instructions = instructions[:start] + instructions[start+1:]
-
         while instructions[start].startswith(" "):
             del instructions[start:end + 1]
+            if end + 1 >= len(instructions):
+                break
 
         instructions = instructions[:start] + sub_arr + instructions[start:]
-        return instructions
+        return instructions, 0
 
     instructions[start] = 'for _ in range(' + str(n_int - 1) + '):'
     instructions = instructions[:start] + sub_arr + instructions[start:]
-    return instructions
+    return instructions, len(sub_arr)
 
 
