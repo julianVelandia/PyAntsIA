@@ -1,0 +1,17 @@
+{
+    "while": "while",
+    "forever": "while True:",
+    "for": "for",
+    "if": "if",
+    "turn_right": "ant.turn_right()",
+    "turn_left": "ant.turn_left()",
+    "not_wall_front": "not ant.is_wall_in_front(walls)",
+    "wall_front": "ant.is_wall_in_front(walls)",
+    "wall_right": "not ant.is_wall_on_right(walls)",
+    "not_wall_right": "ant.is_wall_on_right(walls)",
+    "wall_left": "not ant.is_wall_on_left(walls)",
+    "not_wall_left": "ant.is_wall_on_left(walls)",
+    "move": "ant.move(walls)",
+    "be_red": "ant.change_color('red')",
+    "be_blue": "ant.change_color('blue')"
+}

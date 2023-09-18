@@ -34,6 +34,8 @@ def strategy_while(instructions: [str], global_i, ant, walls):
             sub_arr.append(instructions[global_i][2:])
         else:
             del instructions[start:end + 1]
+        if global_i+1 >= len(instructions):
+            break
     if pass_if:
         instructions = instructions[:start] + sub_arr + instructions[start:]
 

@@ -1,0 +1,70 @@
+{
+  "ant": [
+    {
+      "0": {
+        "instructions": [
+          "forever",
+          "  turn_right",
+          "  be_red",
+          "  for 3",
+          "    move",
+          "  be_blue",
+          "  turn_left"
+        ],
+        "color": "red",
+        "initial_position": {
+          "row": 50,
+          "col": 50
+        }
+      }
+    },
+    {
+      "1": {
+        "instructions": [
+          "forever",
+          "  turn_right",
+          "  be_red",
+          "  for 5",
+          "    move",
+          "  be_blue",
+          "  move",
+          "  turn_left"
+        ],
+        "color": "red",
+        "initial_position": {
+          "row": 30,
+          "col": 50
+        }
+      }
+    },
+    {
+      "2": {
+        "instructions": [
+          "forever",
+          "  turn_right",
+          "  be_red",
+          "  for 4",
+          "    move",
+          "    turn_right",
+          "  be_blue",
+          "  turn_left"
+        ],
+        "color": "blue",
+        "initial_position": {
+          "row": 20,
+          "col": 30
+        }
+      }
+    }
+  ],
+  "wall": [
+    {
+      "row": 8,
+      "col": 2
+    },
+    {
+      "row": 2,
+      "col": 3
+    }
+  ]
+}
