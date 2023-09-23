@@ -1,9 +1,8 @@
-import math
-
+import shutil
 import pygame
 import time
 import pygame.font
-import threading
+import os
 
 from resources.code.translator import translate_instructions
 from src.entity.ant import draw_grid, draw_ant, draw_ant_direction, Ant
@@ -21,7 +20,32 @@ text_index = 0
 red_text = "\033[91m"
 reset_color = "\033[0m"
 iteration_i = 0
+simulation_data = {
+    'scenario_file': 'config/scenario_default.json',
+    'grid_size': 40,
+    'is_draw_grid': True,
+    'screen_size': "full",
+    'translate_code': True,
+}
 
+
+def restart_simulation():
+    global simulation_running, iteration_i, global_i
+    iteration_i = 0
+    global_i = 0
+    simulation_running = False
+    start_simulation(
+        simulation_data['scenario_file'],
+        simulation_data['grid_size'],
+        simulation_data['is_draw_grid'],
+        simulation_data['screen_size'],
+        simulation_data['translate_code'],
+    )
+
+
+def end_simulation():
+    global simulation_running
+    simulation_running = False
 
 def define_initial_code(ants: [Ant], translate_code):
     global text_code
@@ -62,7 +86,7 @@ def start_simulation_thread(
         screen_size,
         translate_code,
 ):
-    global global_i, iteration_i, simulation_running, paused
+    global global_i, iteration_i, simulation_running
     simulation_running = True
     is_in_code_block = False
 
@@ -134,12 +158,11 @@ def start_simulation_thread(
         for ant in ants:
             draw_ant(screen, ant, cell_size)
             draw_ant_direction(screen, ant, cell_size)
-        print(iteration_i)
+
         create_buttons(
             global_i, delay, iteration_i, window_width, window_height, screen, ants,
-            change_code_text, text_code, text_index, increase_velocity, reduce_velocity)
+            change_code_text, text_code, text_index, increase_velocity, reduce_velocity, restart_simulation, end_simulation)
 
-        # boton de stop con un stop aquí
         pygame.display.flip()
         time.sleep(delay / 5000)
         global_i += 1
@@ -148,17 +171,32 @@ def start_simulation_thread(
 
 
 def start_simulation(
-        scenario_file='config/scenario.json',
+        scenario_file='config/scenario_default.json',
         grid_size=40,
         is_draw_grid=True,
         screen_size="full",
         translate_code=True,
 ):
-    simulation_thread = threading.Thread(target=start_simulation_thread, args=(
+    global simulation_data
+    simulation_data = {
+        'scenario_file': scenario_file,
+        'grid_size': grid_size,
+        'is_draw_grid': is_draw_grid,
+        'screen_size': screen_size,
+        'translate_code': translate_code,
+    }
+
+    current_directory = os.getcwd()
+    print(current_directory)
+    scenario_path = os.path.join(current_directory, scenario_file)
+    print(scenario_path)
+    if scenario_file == 'config/scenario_default.json':
+        shutil.copy(scenario_path, os.path.join(current_directory, 'scenario_default.json'))
+
+    start_simulation_thread(
         scenario_file,
         grid_size,
         is_draw_grid,
         screen_size,
         translate_code,
-    ))
-    simulation_thread.start()
+    )

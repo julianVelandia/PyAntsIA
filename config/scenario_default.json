@@ -1,0 +1,36 @@
+{
+  "ant": [
+    {
+      "0": {
+        "instructions": [
+          "move",
+          "move",
+          "move",
+          "move",
+          "be_blue",
+          "for 5",
+          "  move",
+          "  move",
+          "move"
+        ],
+        "color": "red",
+        "initial_position": {
+          "row": 40,
+          "col": 50
+        }
+      }
+
+    }
+
+  ],
+  "wall": [
+    {
+      "row": 8,
+      "col": 2
+    },
+    {
+      "row": 2,
+      "col": 3
+    }
+  ]
+}
